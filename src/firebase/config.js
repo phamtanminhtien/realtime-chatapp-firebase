@@ -14,4 +14,9 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-export { auth, db };
+auth.useEmulator("http://localhost:9099");
+db.useEmulator("localhost", 8080);
+
+const fb_provider = new firebase.auth.FacebookAuthProvider();
+
+export { auth, db, fb_provider };
