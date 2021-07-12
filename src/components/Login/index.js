@@ -1,8 +1,10 @@
-import React from "react";
-import { Col, Row, Button, Typography } from "antd";
 import { FacebookFilled, GoogleSquareFilled } from "@ant-design/icons";
+import { Button, Col, Row, Typography } from "antd";
+import React from "react";
 import styled from "styled-components";
-import { auth, db, fb_provider } from "../../firebase/config";
+import { auth, fb_provider } from "../../firebase/config";
+import genKey from "../../helper/genKey";
+import services from "../../services";
 
 const TypographyTitle = Typography.Title;
 
@@ -19,12 +21,13 @@ function Login() {
       fb_provider
     );
     if (additionalUserInfo.isNewUser) {
-      db.collection("users").add({
+      services.add("users", {
         displayName: user.displayName,
         email: user.email,
         uid: user.uid,
         photoURL: user.photoURL,
         providerId: additionalUserInfo.providerId,
+        keyword: genKey(user.displayName),
       });
     }
   };
@@ -43,11 +46,11 @@ function Login() {
             style={{ marginBottom: 20, marginTop: 20 }}
             onClick={handleLoginFacebook}
           >
-            Đăng nhập với Facebook
+            Login with Facebook
           </ButtonLogin>
 
           <ButtonLogin size="large" block icon={<GoogleSquareFilled />}>
-            Đăng nhập với Google
+            Login with Google
           </ButtonLogin>
         </Col>
       </Row>

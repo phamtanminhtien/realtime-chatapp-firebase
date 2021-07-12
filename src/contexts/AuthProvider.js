@@ -1,8 +1,7 @@
-import { Spin } from "antd";
-import React, { createContext, useEffect } from "react";
-import { useState } from "react";
-import { auth } from "../firebase/config";
+import React, { createContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import Loading from "../components/Extra/Loading";
+import { auth } from "../firebase/config";
 
 export const AuthContext = createContext();
 
@@ -11,30 +10,31 @@ function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
 
+  const signOut = () => {
+    auth.signOut();
+  };
+
   useEffect(() => {
     const unsubscribed = auth.onAuthStateChanged((user) => {
       if (user) {
         const { displayName, uid, photoURL, email } = user;
 
         setUser({ displayName, uid, photoURL, email });
-        console.log({ displayName, uid, photoURL });
-
-        setIsLoading(false);
         history.push("/");
+        setIsLoading(false);
+
         return;
       }
 
-      setIsLoading(false);
       history.push("/login");
+      setIsLoading(false);
     });
-    return () => {
-      unsubscribed();
-    };
+    return unsubscribed;
   }, [history]);
 
   return (
-    <AuthContext.Provider value={user}>
-      {isLoading ? <Spin></Spin> : children}
+    <AuthContext.Provider value={{ user, signOut }}>
+      {isLoading ? <Loading /> : children}
     </AuthContext.Provider>
   );
 }
